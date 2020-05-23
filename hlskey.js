@@ -45,10 +45,10 @@ const getKeyFromId = async (id, userToken, deviceId) => {
     headers: {
       'content-type': 'application/json',
     },
-    body: {
+    body: JSON.stringify({
       kv: 'a',
       lt: id,
-    },
+    }),
   });
 
   return getVideoKey(cid, k, deviceId);
