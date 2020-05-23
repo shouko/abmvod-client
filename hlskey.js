@@ -1,7 +1,6 @@
 /* eslint-disable no-bitwise */
 /* global BigInt */
 const crypto = require('crypto');
-const struct = require('python-struct');
 const config = require('./config');
 const fetch = require('./fetch');
 
