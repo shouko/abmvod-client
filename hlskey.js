@@ -1,8 +1,26 @@
 /* eslint-disable no-bitwise */
+/* global BigInt */
 const crypto = require('crypto');
 const struct = require('python-struct');
 const config = require('./config');
 const fetch = require('./fetch');
+
+const getVideoKey = (cid, k, deviceId) => {
+  const res = k
+    .split('')
+    .map((e, i) => BigInt(config.get('STRTABLE').indexOf(e)) * (BigInt(58) ** BigInt(k.length - 1 - i)))
+    .reduce((a, b) => a + b, BigInt(0));
+  const cipherVideoKey = Buffer.from(res.toString(16), 'hex');
+
+  const h = crypto.createHmac('sha256', Buffer.from(config.get('HKEY'), 'hex'));
+  h.update(`${cid}${deviceId}`);
+  const key = h.digest();
+
+  const decipher = crypto.createDecipheriv('aes-256-ecb', key, new Uint8Array(0))
+    .setAutoPadding(false);
+
+  return Buffer.concat([decipher.update(cipherVideoKey), decipher.final()]);
+};
 
 const getKeyFromId = async (id, userToken, deviceId) => {
   const headers = {
@@ -34,20 +52,7 @@ const getKeyFromId = async (id, userToken, deviceId) => {
     },
   });
 
-  const res = k
-    .map((e, i) => config.get('STRTABLE').indexOf(e) * (58 ** (k.length - 1 - i)))
-    .reduce((a, b) => a + b, 0);
-
-  const cipherVideoKey = struct.pack('>QQ', res >> 64, res & 0xffffffffffffffff);
-
-  const h = crypto.createHmac('sha256', Buffer.from(config.get('HKEY'), 'hex'));
-  h.update(`${cid}${deviceId}`);
-  const key = h.digest();
-
-  const decipher = crypto.createDecipher('aes-128-ecb', key);
-  const plainVideoKey = decipher.update(cipherVideoKey, 'utf-8') + decipher.final('utf-8');
-
-  return plainVideoKey;
+  return getVideoKey(cid, k, deviceId);
 };
 
 module.exports = {
