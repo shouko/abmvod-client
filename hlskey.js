@@ -39,7 +39,7 @@ const getKeyFromId = async (id, userToken, deviceId) => {
     method: 'GET',
     headers,
   });
-
+  if (!token) throw new Error('Failed to get MEDIATOKEN');
   const { cid, k } = await fetch(`${config.get('_LICENSE_API')}?t=${token}`, {
     method: 'POST',
     headers: {
