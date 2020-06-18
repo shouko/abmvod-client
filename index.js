@@ -61,4 +61,5 @@ const getKeyFromId = async (id) => {
 
 module.exports = {
   getKeyFromId,
+  generateApplicationKeySecretTs,
 };
