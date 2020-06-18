@@ -28,17 +28,21 @@ const hmacMultiPass = (input, pass) => {
   return tmp;
 };
 
-const generateApplicationKeySecret = (deviceId) => {
-  const tsCeilingToHour = Number.parseInt(((Date.now() / 1000 + 3600) / 3600) * 3600, 10);
+const generateApplicationKeySecretTs = (deviceId, tsCeilingToHour) => {
   const date = new Date(tsCeilingToHour * 1000);
-  const timestampCeilingToHourString = tsCeilingToHour.toString(10);
+  const tsCeilingToHourString = tsCeilingToHour.toString(10);
   let tmp = hmacMultiPass(config.get('SECRETKEY'), 1);
   tmp = hmacMultiPass(tmp, date.getUTCMonth() + 1);
   tmp = hmacMultiPass(base64Url(tmp) + deviceId, 1);
   tmp = hmacMultiPass(tmp, date.getUTCDate() % 5);
-  tmp = hmacMultiPass(base64Url(tmp) + timestampCeilingToHourString);
+  tmp = hmacMultiPass(base64Url(tmp) + tsCeilingToHourString);
   tmp = hmacMultiPass(tmp, date.getUTCHours() % 5);
   return base64Url(tmp);
+};
+
+const generateApplicationKeySecret = (deviceId) => {
+  const tsCeilingToHour = Number.parseInt(((Date.now() / 1000 + 3600) / 3600) * 3600, 10);
+  return generateApplicationKeySecretTs(deviceId, tsCeilingToHour);
 };
 
 const getKeyFromId = async (id) => {
