@@ -29,9 +29,9 @@ const hmacMultiPass = (input, pass) => {
 };
 
 const generateApplicationKeySecret = (deviceId) => {
-  const tsCeilingToHour = ((Date.now() / 1000 + 3600) / 3600) * 3600;
+  const tsCeilingToHour = Number.parseInt(((Date.now() / 1000 + 3600) / 3600) * 3600, 10);
   const date = new Date(tsCeilingToHour * 1000);
-  const timestampCeilingToHourString = Number.parseInt(tsCeilingToHour, 10).toString(10);
+  const timestampCeilingToHourString = tsCeilingToHour.toString(10);
   let tmp = hmacMultiPass(config.get('SECRETKEY'), 1);
   tmp = hmacMultiPass(tmp, date.getUTCMonth() + 1);
   tmp = hmacMultiPass(base64Url(tmp) + deviceId, 1);
@@ -44,14 +44,14 @@ const generateApplicationKeySecret = (deviceId) => {
 const getKeyFromId = async (id) => {
   const deviceId = uuid4();
   const applicationKeySecret = generateApplicationKeySecret(deviceId);
-  const tres = await fetch(`${config.get('_USER_API')}`, {
+  const { token } = await fetch(`${config.get('_USER_API')}`, {
     method: 'POST',
     body: {
       deviceId,
       applicationKeySecret,
     },
   });
-  const { token } = tres;
+  if (!token) throw new Error('Failed to get USERTOKEN');
   return hlskey.getKeyFromId(id, token, deviceId);
 };
 
