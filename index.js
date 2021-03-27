@@ -6,7 +6,7 @@ const fetch = require('./fetch');
 const hlskey = require('./hlskey');
 require('dotenv').config();
 
-const confKeys = ['HKEY', 'STRTABLE', 'SECRETKEY', 'MEDIATOKEN_PARAMS', '_MEDIATOKEN_API', '_USER_API', '_LICENSE_API'];
+const confKeys = ['HKEY', 'STRTABLE', 'SECRETKEY', '_MEDIATOKEN_API', '_MEDIATOKEN_API_PARAMS', '_USER_API', '_LICENSE_API'];
 
 confKeys.forEach((k) => {
   config.set(k, process.env[k]);
