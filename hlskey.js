@@ -25,14 +25,7 @@ const getKeyFromId = async (id, userToken, deviceId) => {
   const headers = {
     Authorization: `Bearer ${userToken}`,
   };
-  const params = {
-    osName: 'android',
-    osVersion: '6.0.1',
-    osLang: 'ja_JP',
-    osTimezone: 'Asia/Tokyo',
-    appId: 'tv.abema',
-    appVersion: '3.27.1',
-  };
+  const params = JSON.parse(config.get('MEDIATOKEN_PARAMS'));
   const query = Object.entries(params).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
 
   const { token } = await fetch(`${config.get('_MEDIATOKEN_API')}?${query}`, {
