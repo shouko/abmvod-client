@@ -46,10 +46,13 @@ const getKeyFromId = async (id) => {
   const applicationKeySecret = generateApplicationKeySecret(deviceId);
   const { token } = await fetch(`${config.get('_USER_API')}`, {
     method: 'POST',
-    body: {
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
       deviceId,
       applicationKeySecret,
-    },
+    }),
   });
   if (!token) throw new Error('Failed to get USERTOKEN');
   return hlskey.getKeyFromId(id, token, deviceId);
