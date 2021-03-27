@@ -41,7 +41,7 @@ const generateApplicationKeySecretTs = (deviceId, tsCeilingToHour) => {
 };
 
 const generateApplicationKeySecret = (deviceId) => {
-  const tsCeilingToHour = Number.parseInt(((Date.now() / 1000 + 3600) / 3600) * 3600, 10);
+  const tsCeilingToHour = Number.parseInt((Date.now() / 1000 + 3600) / 3600, 10) * 3600;
   return generateApplicationKeySecretTs(deviceId, tsCeilingToHour);
 };
 
