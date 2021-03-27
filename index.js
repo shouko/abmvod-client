@@ -1,9 +1,9 @@
 const uuid4 = require('uuid').v4;
 const crypto = require('crypto');
+const base64Url = require('urlsafe-base64').encode;
 const config = require('./config');
 const fetch = require('./fetch');
 const hlskey = require('./hlskey');
-const base64Url = require('urlsafe-base64').encode
 require('dotenv').config();
 
 const confKeys = ['HKEY', 'STRTABLE', 'SECRETKEY', '_MEDIATOKEN_API', '_USER_API', '_LICENSE_API'];
