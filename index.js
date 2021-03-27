@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const config = require('./config');
 const fetch = require('./fetch');
 const hlskey = require('./hlskey');
+const base64Url = require('urlsafe-base64').encode
 require('dotenv').config();
 
 const confKeys = ['HKEY', 'STRTABLE', 'SECRETKEY', '_MEDIATOKEN_API', '_USER_API', '_LICENSE_API'];
@@ -12,11 +13,6 @@ confKeys.forEach((k) => {
 });
 
 const createHmacInstance = () => crypto.createHmac('sha256', config.get('SECRETKEY'));
-
-const base64Url = (input) => {
-  const buff = Buffer.isBuffer(input) ? input : Buffer.from(input);
-  return buff.toString('base64').replace(/\+/g, '/').replace(/\//g, '_').replace(/=+$/, '');
-};
 
 const hmacMultiPass = (input, pass) => {
   let tmp = input;
@@ -35,7 +31,7 @@ const generateApplicationKeySecretTs = (deviceId, tsCeilingToHour) => {
   tmp = hmacMultiPass(tmp, date.getUTCMonth() + 1);
   tmp = hmacMultiPass(base64Url(tmp) + deviceId, 1);
   tmp = hmacMultiPass(tmp, date.getUTCDate() % 5);
-  tmp = hmacMultiPass(base64Url(tmp) + tsCeilingToHourString);
+  tmp = hmacMultiPass(base64Url(tmp) + tsCeilingToHourString, 1);
   tmp = hmacMultiPass(tmp, date.getUTCHours() % 5);
   return base64Url(tmp);
 };
